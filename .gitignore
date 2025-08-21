@@ -38,3 +38,35 @@
 #*.[pP][oO][tT][mM]
 #*.[pP][pP][sS]
 #*.[pP][pP][sS][mM]
+
+# Office crée des fichiers temporaires (verrous) quand un document est ouvert.
+~$*
+*.$$$
+*.~tmp
+*.tmp
+*.temp
+
+# Fichiers de sauvegarde et de l'historique de versions créés par certains éditeurs.
+*~
+*.bak
+*.old
+*.swp
+*.swo
+
+
+# Fichiers de cache des contrôles ActiveX et de référence de l'IDE.
+# Ils peuvent causer des problèmes entre différentes versions d'Office.
+*.exd
+*.exp
+*.vbe
+*.vbg
+
+
+# Fichiers spécifiques au système d'exploitation et aux outils de développement 
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
