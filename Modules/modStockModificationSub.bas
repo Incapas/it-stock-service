@@ -2,7 +2,7 @@ Attribute VB_Name = "modStockModificationSub"
 ' ==============================================================================================
 ' Procédure : addItem
 ' Objectif  : Ajouter un nouvel matériel dans le tableau "stock"
-' Paramètre : itemLabel libellé du matériel à ajouter
+' Paramètre : itemLabel ? texte du libellé du matériel à ajouter
 ' ==============================================================================================
 Public Sub addItem(itemLabel As String)
     ' Références aux objets principaux
@@ -33,14 +33,14 @@ End Sub
 ' Procédure : addMovement
 ' Objectif  : Ajouter un nouvel enregistrement dans le tableau "movement"
 ' Paramètres:
-'   moveDate            Date du mouvement
-'   moveType            Type de mouvement ("Entrée" ou "Sortie")
-'   moveValue           Quantité du mouvement
-'   moveDescription     Description
-'   moveItem            Libellé du matériel concerné
+'   moveDate        ? Date du mouvement
+'   moveType        ? Type de mouvement ("Entrée" ou "Sortie")
+'   moveValue       ? Quantité du mouvement
+'   moveDescription ? Commentaire ou description
+'   moveItem        ? Libellé du matériel concerné
 ' ==============================================================================================
 Public Sub addMovement(moveDate As Date, moveType As String, moveValue As Integer, moveDescription As String, moveItem As String)
-    ' Références aux objets principaux
+    'Références aux objets principaux
     ' Classeur contenant la macro
     Set wb = ThisWorkbook
     ' Feuille "mouvement"
@@ -69,4 +69,5 @@ Public Sub addMovement(moveDate As Date, moveType As String, moveValue As Intege
     ' Colonne 5 : libellé du matériel concerné
     newMovementRow.Range.Cells(5).Value = moveItem
 End Sub
+
 

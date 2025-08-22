@@ -3,6 +3,7 @@ Attribute VB_Name = "modStyle"
 Public Const FONT_NAME = "Segoe UI"
 
 ' Tailles de la police
+Public Const FONT_SIZE_EXTRA_SMALL = 9
 Public Const FONT_SIZE_SMALL As Long = 11
 Public Const FONT_SIZE_LARGE As Long = 14
 

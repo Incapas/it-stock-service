@@ -97,6 +97,8 @@ Dim itemLabel As String
 Dim rangeStockAddressPart() As String
 Dim rangeStockLastLine As Long
 
+Set wb = ThisWorkbook
+
 ' Récupère le texte saisi
 itemLabel = txtAddItem.Value
 
@@ -126,6 +128,9 @@ Next i
 
 ' Ferme le formulaire après ajout
 Unload Me
+
+' Sauvegarde le classeur
+wb.Save
 End Sub
 
 ' ----------------------------------------------------------------------------------------------

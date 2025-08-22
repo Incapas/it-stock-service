@@ -464,7 +464,7 @@ With lstItemHistorical
     .Width = 275
     .Height = 155
     .Font.Name = FONT_NAME
-    .Font.Size = 9
+    .Font.Size = FONT_SIZE_EXTRA_SMALL
     .BackColor = COLOR_GRAY_IRON
     .ForeColor = COLOR_GRAY_LIGHT
     .BorderColor = COLOR_GRAY_LIGHT
@@ -477,7 +477,7 @@ End With
 ' Section : Boutons d'action
 ' ----------------------------------------------
 
-' Bouton pour ajouter un nouvel article
+' Bouton pour ajouter un nouveau matériel
 With btnAddItem
     .Left = 20
     .Top = 450
@@ -491,7 +491,7 @@ With btnAddItem
     .ForeColor = COLOR_WHITE
 End With
 
-' Bouton pour supprimer un article sélectionné
+' Bouton pour supprimer un matériel sélectionné
 With btnDeleteItem
     .Left = 200
     .Top = 450
@@ -505,7 +505,7 @@ With btnDeleteItem
     .ForeColor = COLOR_WHITE
 End With
 
-' Bouton pour enregistrer un mouvement (entrée ou sortie) sur un article
+' Bouton pour enregistrer un mouvement (entrée ou sortie) sur un matériel
 With btnAddMovement
     .Left = 380
     .Top = 450
@@ -521,8 +521,8 @@ End With
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Événement : Clic sur le bouton "Ajouter un article"
-' Action : Ouvre le formulaire de gestion d'un nouvel article
+' Événement : Clic sur le bouton "Ajouter un matériel"
+' Action : Ouvre le formulaire de gestion d'un nouveau matériel
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnAddItem_Click()
 ' Affiche le formulaire frmItem en mode modal
@@ -579,7 +579,7 @@ End Sub
 ' ----------------------------------------------------------------------------------------------
 Private Sub lstItems_Change()
 
- ' Variables pour stocker les informations de l’article actif
+ ' Variables pour stocker les informations de l’matériel actif
  Dim activeItemLabel As String
  Dim activeItemCategory As String
  Dim activeItemSubcategory As String
@@ -587,6 +587,7 @@ Private Sub lstItems_Change()
  Dim activeItemMinQuantity As Integer
  Dim activeItemUpdateDate As Date
  Dim activeItemComment As String
+ Dim lastRow As Long
 
  ' Active le bouton de sauvegarde (un élément est sélectionné)
  btnSaveItemUpdate.Enabled = True
@@ -600,15 +601,21 @@ Private Sub lstItems_Change()
 
  ' Sépare l'adresse en parties pour identifier la dernière ligne
  rangeMovementAddressPart = Split(rangeMovementAdress, "$")
- rangeMovementLastLine = CLng(rangeMovementAddressPart(4))
+ rangeMovementLastLine = CLng(rangeMovementAddressPart(4)) + 1
 
  ' ----------------------------
  ' Récupération des infos du matériel sélectionné
  ' ----------------------------
  ' Évite les erreurs si matériel est introuvable
  On Error Resume Next
- ' Libellé de l’article sélectionné
+
+ ' Libellé de l’matériel sélectionné
  activeItemLabel = lstItems.Value
+
+
+ ' Permet d'actualiser le formulaire dynamique après enregistrement
+ lastRow = wsStock.Cells(wsStock.Rows.Count, "A").End(xlUp).Row
+ Set rangeStock = wsStock.Range("A3:G" & lastRow)
 
  If activeItemLabel = "" Then
      ' Aucun élément sélectionné ? réinitialise les champs
@@ -633,15 +640,16 @@ Private Sub lstItems_Change()
      cmbItemCategory.Value = activeItemCategory
      cmbItemSubcategory.Value = activeItemSubcategory
      txtItemCurrentQuantity.Value = activeItemCurrentQuantity
-     txtItemMinQuantity = activeItemMinQuantity
-     txtItemUpdateDate = activeItemUpdateDate
+     txtItemCurrentQuantity.Value = activeItemCurrentQuantity
+     txtItemMinQuantity.Value = activeItemMinQuantity
+     txtItemUpdateDate.Value = activeItemUpdateDate
      txtItemComment = activeItemComment
      
      ' ----------------------------
      ' Remplissage de l’historique
      ' ----------------------------
      lstItemHistorical.Clear
-     For i = 2 To rangeMovementLastLine + 1
+     For i = 2 To rangeMovementLastLine + 2
          ' Vérifie si la colonne 5 du mouvement correspond à matériel sélectionné
          If tabMovement.Range.Cells(i - 1, 5) = activeItemLabel Then
             ' Date mouvement
@@ -770,7 +778,7 @@ displayItems
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Clic simple sur "Quantités faibles" : affiche uniquement les articles dont la quantité = quantité mini
+' Clic simple sur "Quantités faibles" : affiche uniquement les matériels dont la quantité = quantité mini
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnFilterLowQuantity_Click()
 Dim rangeStockAddressPart() As String
@@ -784,7 +792,7 @@ rangeStockLastLine = CLng(rangeStockAddressPart(4))
 ' Vide la liste avant de la remplir
 lstItems.Clear
 
-' Parcours des articles
+' Parcours des matériels
 For i = 3 To rangeStockLastLine
     ' Col2 = Qté actuelle / Col5 = Qté minimum ? filtre
     If tabStock.Range.Cells(i - 1, 2) <= tabStock.Range(i - 1, 5) Then
@@ -824,7 +832,7 @@ userSearch = CStr(LCase(Trim(txtSearchItem.Value)))
 ' Vide la liste avant de la remplir avec les résultats
 lstItems.Clear
 
-' Boucle sur les articles
+' Boucle sur les matériels
 For i = 3 To rangeStockLastLine
     itemLabelValue = CStr(LCase(Trim(tabStock.Range(i - 1, 1).Value)))
     ' InStr(..., ..., vbTextCompare) = 1 ? commence par le texte recherché
@@ -841,7 +849,7 @@ Next i
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Double-clic sur "Recherche" : réaffiche tous les articles
+' Double-clic sur "Recherche" : réaffiche tous les matériels
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnSearchItem_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 ' Rafraîchit la liste principale
@@ -849,7 +857,7 @@ displayItems
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Clic simple sur "Supprimer" : efface l’article sélectionné après confirmation
+' Clic simple sur "Supprimer" : efface l’matériel sélectionné après confirmation
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnDeleteItem_Click()
 Dim activeItemLabel As String
@@ -892,6 +900,10 @@ For i = 3 To lastRow
     lstItems.List(lstItems.ListCount - 1, 2) = wsStock.Cells(i, 3).Value
     lstItems.List(lstItems.ListCount - 1, 3) = wsStock.Cells(i, 4).Value
 Next i
+
+' Sauvegarde le classeur
+wb.Save
+
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
@@ -906,7 +918,7 @@ Private Sub btnSaveItemUpdate_Click()
 
     ' Vérifier la sélection de l'élément dans la ListBox
     If lstItems.ListIndex = -1 Then
-        MsgBox "Veuillez sélectionner un article à modifier.", vbExclamation
+        MsgBox "Veuillez sélectionner un matériel à modifier.", vbExclamation
         Exit Sub
     End If
     
@@ -923,9 +935,9 @@ Private Sub btnSaveItemUpdate_Click()
     rowToUpdate = Application.Match(activeItemLabel, rangeStock, 0)
     On Error GoTo 0
     
-    ' Gérer l'erreur si l'article n'est pas trouvé
+    ' Gérer l'erreur si matériel n'est pas trouvé
     If IsError(rowToUpdate) Then
-        MsgBox "Erreur : L'article sélectionné n'a pas été trouvé dans le tableau.", vbCritical
+        MsgBox "Erreur : matériel sélectionné n'a pas été trouvé dans le tableau.", vbCritical
         Exit Sub
     End If
     
@@ -935,6 +947,7 @@ Private Sub btnSaveItemUpdate_Click()
     If saveConfirmation = vbYes Then
         ' Mettre à jour les données sur la feuille de calcul
         ' Le +2 est nécessaire car la plage commence à la ligne 3 (rowToUpdate est un index basé sur la plage)
+        wsStock.Cells(rowToUpdate + 2, 1).Value = txtItemLabel.Value
         wsStock.Cells(rowToUpdate + 2, 3).Value = cmbItemCategory.Value
         wsStock.Cells(rowToUpdate + 2, 6).Value = cmbItemSubcategory.Value
         wsStock.Cells(rowToUpdate + 2, 5).Value = txtItemMinQuantity.Value
@@ -959,8 +972,8 @@ Private Sub btnSaveItemUpdate_Click()
             Exit For
         End If
     Next i
+    
+' Sauvegarde le classeur
+wb.Save
 End Sub
-
-
-
 

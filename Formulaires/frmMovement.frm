@@ -282,7 +282,6 @@ End If
 
 ' Description libre
 moveDescription = txtMovementDescription.Value
-
  
 ' Localisation du matériel dans le stock
 Set rangeStock = tabStock.ListColumns(1).DataBodyRange
@@ -298,6 +297,9 @@ If moveType = "Entrée" Then
 Else
     tabStock.DataBodyRange.Cells(activeItemRowTab, 2).Value = CLng(activeItemCurrentQuantity) - moveValue
 End If
+
+' Mise à jour de la date de dernière MAJ
+tabStock.DataBodyRange.Cells(activeItemRowTab, 4).Value = moveDate
 
 ' Ajout de l'enregistement dans le tableau "movement"
 addMovement moveDate, moveType, moveValue, moveDescription, moveItemLabel
@@ -336,8 +338,11 @@ End With
         Next j
     End If
     
-    ' fermeture du formulaire
-    Unload Me
+' Fermeture du formulaire
+Unload Me
+    
+' Sauvegarde le classeur
+wb.Save
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
@@ -346,3 +351,4 @@ End Sub
 Private Sub btnCancelAddMovement_Click()
     Unload Me
 End Sub
+
