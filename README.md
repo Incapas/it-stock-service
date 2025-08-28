@@ -45,137 +45,137 @@ Le système est structuré autour de trois feuilles de calcul principales :
 
 ### 4. Configuration de la feuille `configuration`
 
-#### Catégories
+#### Catégorie
 - **Nom du tableau** : `category`
 - **Plage** : `A1:A12`
 - **En-tête** : `Catégorie`
 - **Contenu** :
-  - Accessoire
-  - Composant Interne
-  - Connectique/Câblage
-  - Consommable
-  - Imprimante/Scanner
-  - Logiciel/Licence
-  - Matériel de Bureau
-  - Matériel Mobile
-  - Matériel Réseau
-  - Périphérique
-  - Stockage
+  - accessoire
+  - composant interne
+  - connectique/câblage
+  - consommable
+  - imprimante/scanner
+  - logiciel/licence
+  - matériel de bureau
+  - matériel mobile
+  - matériel réseau
+  - périphérique
+  - stockage
 
-#### Matériel de Bureau
+#### matériel de bureau
 - **Nom du tableau** : `office_equipment`
 - **Plage** : `C1:C6`
-- **En-tête** : `Matériel de bureau`
+- **En-tête** : `matériel de bureau`
 - **Contenu** :
-  - Écran et moniteur
-  - Ordinateur fixe
-  - Ordinateur portable
-  - Station de travail
-  - Vidéoprojecteur
+  - écran et moniteur
+  - ordinateur fixe
+  - ordinateur portable
+  - station de travail
+  - vidéoprojecteur
 
-#### Imprimante et Scanner
+#### imprimante et scanner
 - **Nom du tableau** : `printer_scanner`
 - **Plage** : `E1:E5`
-- **En-tête** : `Imprimante et scanner`
+- **En-tête** : `imprimante et scanner`
 - **Contenu** :
-  - Imprimante jet d'encre
-  - Imprimante laser
-  - Imprimante multifonction
-  - Scanner
+  - imprimante jet d'encre
+  - imprimante laser
+  - imprimante multifonction
+  - scanner
 
-#### Composant interne
+#### composant interne
 - **Nom du tableau** : `internal_component`
 - **Plage** : `G1:G7`
-- **En-tête** : `Composant interne`
+- **En-tête** : `composant interne`
 - **Contenu** :
-  - Alimentation électrique (PSU)
-  - Boîtier
-  - Carte graphique (GPU)
-  - Carte mère
-  - Mémoire vive (RAM)
-  - Processeur (CPU)
+  - alimentation électrique (PSU)
+  - boîtier
+  - carte graphique (GPU)
+  - carte mère
+  - mémoire vive (RAM)
+  - processeur (CPU)
 
-#### Périphérique
+#### périphérique
 - **Nom du tableau** : `peripheral`
 - **Plage** : `I1:I6`
-- **En-tête** : `Périphérique`
+- **En-tête** : `périphérique`
 - **Contenu** :
-  - Casque
-  - Clavier
-  - Microphone
-  - Souris
-  - Webcam
+  - casque
+  - clavier
+  - microphone
+  - souris
+  - webcam
 
-#### Matériel réseau
+#### matériel réseau
 - **Nom du tableau** : `network_hardware`
 - **Plage** : `K1:K5`
-- **En-tête** : `Matériel réseau`
+- **En-tête** : `mtériel réseau`
 - **Contenu** :
-  - Carte réseau
-  - Commutateur
-  - Point d'accès
-  - Routeur
+  - carte réseau
+  - commutateur
+  - point d'accès
+  - routeur
 
-#### Stockage
+#### stockage
 - **Nom du tableau** : `storage`
 - **Plage** : `M1:M7`
-- **En-tête** : `Stockage`
+- **En-tête** : `stockage`
 - **Contenu** :
-  - Carte mémoire
-  - Clé USB
-  - Disque dur interne (HDD)
-  - Disque externe
-  - Disque SSD interne
-  - Serveur NAS
+  - carte mémoire
+  - clé USB
+  - disque dur interne (HDD)
+  - disque externe
+  - disque SSD interne
+  - serveur NAS
 
-#### Connectique et Câblage
+#### connectique et câblage
 - **Nom du tableau** : `connector_cabling`
 - **Plage** : `O1:O5`
-- **En-tête** : `Connectique et Câblage`
+- **En-tête** : `connectique et câblage`
 - **Contenu** :
-  - Adaptateur et convertisseur
-  - Câble de donnée
-  - Câble réseau
-  - Câble vidéo
+  - Aaaptateur et convertisseur
+  - câble de donnée
+  - câble réseau
+  - câble vidéo
 
-#### Accessoire
+#### accessoire
 - **Nom du tableau** : `accessorie`
 - **Plage** : `Q1:Q6`
-- **En-tête** : `Accessoire`
+- **En-tête** : `accessoire`
 - **Contenu** :
-  - Batterie et chargeur
-  - Onduleur (UPS)
-  - Outil et kit de nettoyage
-  - Pile et accumulateur
-  - Station d'accueil
+  - batterie et chargeur
+  - onduleur (UPS)
+  - outil et kit de nettoyage
+  - pile et accumulateur
+  - station d'accueil
 
-#### Consommable
+#### consommable
 - **Nom du tableau** : `consumable`
 - **Plage** : `S1:S4`
-- **En-tête** : `Consommable`
+- **En-tête** : `consommable`
 - **Contenu** :
-  - Cartouche d'encre
-  - Papier
-  - Toner
+  - cartouche d'encre
+  - papier
+  - toner
 
-#### Logiciel et Licence
+#### logiciel et licence
 - **Nom du tableau** : `software_licence`
 - **Plage** : `U1:U5`
-- **En-tête** : `Logiciel et Licence`
+- **En-tête** : `logiciel et licence`
 - **Contenu** :
-  - Logiciel de sécurité
-  - Logiciel métier
-  - Suite bureautique
-  - Système d'exploitation
+  - logiciel de sécurité
+  - logiciel métier
+  - suite bureautique
+  - système d'exploitation
 
-#### Matériel Mobile
+#### matériel mobile
 - **Nom du tableau** : `mobile_hardware`
 - **Plage** : `W1:W4`
-- **En-tête** : `Matériel mobile`
+- **En-tête** : `matériel mobile`
 - **Contenu** :
-  - Smartphone
-  - Smartwatch
-  - Tablette
+  - smartphone
+  - smartwatch
+  - tablette
 
 ---
 **Note** : Tous les tableaux de cette feuille "configuration" doivent être de type **Texte** et triés par ordre croissant (A → Z).
