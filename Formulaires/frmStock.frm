@@ -13,13 +13,12 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Sub UserForm_Initialize()
 ' ==============================================================================================
 ' Procédure : UserForm_Initialize
 ' Objectif  : Initialiser l’interface et les variables du formulaire de gestion du stock
 ' Déclenchement : Automatique à l'ouverture du UserForm
 ' ==============================================================================================
-
+Private Sub UserForm_Initialize()
 ' ----------------------------------------------------------------------------------------------
 ' Section pour déclaration des variables et initialisation des références
 ' ----------------------------------------------------------------------------------------------
@@ -91,7 +90,7 @@ With btnSearchItem
     .Top = 20
     .Width = 125
     .Height = 22
-    .Caption = "Recherche"
+    .Caption = "Rechercher"
     .Font.Bold = True
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
@@ -295,6 +294,7 @@ With cmbItemCategory
     .Top = 118
     .Width = 180
     .Height = 20
+    .Style = fmStyleDropDownList
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
@@ -323,6 +323,7 @@ With cmbItemSubcategory
     .Top = 156
     .Width = 180
     .Height = 20
+    .Style = fmStyleDropDownList
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
@@ -431,6 +432,7 @@ With txtItemComment
     .Top = 270
     .Width = 180
     .Height = 22
+    .MaxLength = 30
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
@@ -521,7 +523,6 @@ End With
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Événement : Clic sur le bouton "Ajouter un matériel"
 ' Action : Ouvre le formulaire de gestion d'un nouveau matériel
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnAddItem_Click()
@@ -530,7 +531,6 @@ Private Sub btnAddItem_Click()
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Événement : Clic sur le bouton "Ajouter un mouvement"
 ' Action : Ouvre le formulaire d'enregistrement d'un nouveau mouvement (entrée ou sortie)
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnAddMovement_Click()
@@ -539,7 +539,6 @@ frmMovement.Show
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Procédure : displayItems
 ' Objectif : Vider et recharger la liste principale (lstItems) avec les données du tableau "stock"
 ' ----------------------------------------------------------------------------------------------
 Private Sub displayItems()
@@ -574,7 +573,6 @@ Next i
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Événement : lstItems_Change
 ' Objectif : Afficher les détails du matériel sélectionné + son historique
 ' ----------------------------------------------------------------------------------------------
 Private Sub lstItems_Change()
@@ -596,6 +594,7 @@ Private Sub lstItems_Change()
  ' Préparation de la liste historique
  ' ----------------------------
 
+On Error Resume Next
  ' Récupère l'adresse du tableau "movement"
  rangeMovementAdress = rangeMovement.Address
 
@@ -612,13 +611,12 @@ Private Sub lstItems_Change()
  ' Libellé de l’matériel sélectionné
  activeItemLabel = lstItems.Value
 
-
  ' Permet d'actualiser le formulaire dynamique après enregistrement
  lastRow = wsStock.Cells(wsStock.Rows.Count, "A").End(xlUp).Row
  Set rangeStock = wsStock.Range("A3:G" & lastRow)
 
  If activeItemLabel = "" Then
-     ' Aucun élément sélectionné ? réinitialise les champs
+     ' Aucun élément sélectionné réinitialise les champs
      txtItemLabel.Value = ""
      cmbItemCategory.Value = ""
      cmbItemSubcategory.Value = ""
@@ -634,20 +632,31 @@ Private Sub lstItems_Change()
      activeItemMinQuantity = WorksheetFunction.VLookup(activeItemLabel, rangeStock, 5, False)
      activeItemUpdateDate = WorksheetFunction.VLookup(activeItemLabel, rangeStock, 4, False)
      activeItemComment = WorksheetFunction.VLookup(activeItemLabel, rangeStock, 7, False)
-     
+
      ' Affichage dans les contrôles du formulaire
      txtItemLabel.Value = activeItemLabel
      cmbItemCategory.Value = activeItemCategory
      cmbItemSubcategory.Value = activeItemSubcategory
-     txtItemCurrentQuantity.Value = activeItemCurrentQuantity
-     txtItemCurrentQuantity.Value = activeItemCurrentQuantity
+     
+     ' N'affiche la quantité en stock du matériel seulement si un mouvement a déjà eu lieu
+     If activeItemCurrentQuantity = 0 And activeItemUpdateDate = "00:00:00" Then
+        txtItemCurrentQuantity.Value = ""
+     Else
+         txtItemCurrentQuantity.Value = activeItemCurrentQuantity
+     End If
+    
      txtItemMinQuantity.Value = activeItemMinQuantity
-     txtItemUpdateDate.Value = activeItemUpdateDate
+     
+     ' N'affiche la date de la dernière mise à jour du matériel seulement si un mouvement a déjà eu lieu
+     If activeItemUpdateDate = "00:00:00" Then
+        txtItemUpdateDate.Value = ""
+     Else
+        txtItemUpdateDate.Value = activeItemUpdateDate
+     End If
+    
      txtItemComment = activeItemComment
      
-     ' ----------------------------
      ' Remplissage de l’historique
-     ' ----------------------------
      lstItemHistorical.Clear
      For i = 2 To rangeMovementLastLine + 2
          ' Vérifie si la colonne 5 du mouvement correspond à matériel sélectionné
@@ -671,7 +680,6 @@ Private Sub lstItems_Change()
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
-' Événement : cmbItemCategory_Change
 ' Objectif : Modifie les options de sous-catégorie selon la catégorie choisie
 ' ----------------------------------------------------------------------------------------------
 Private Sub cmbItemCategory_Change()
@@ -680,29 +688,36 @@ Dim categoryChoiced As String
 
 categoryChoiced = cmbItemCategory.Value
 
-If categoryChoiced = "Accessoire" Then
+If categoryChoiced = "accessoire" Then
     cmbItemSubcategory.RowSource = "accessorie"
-ElseIf categoryChoiced = "Composant Interne" Then
+ElseIf categoryChoiced = "composant interne" Then
     cmbItemSubcategory.RowSource = "internal_component"
-ElseIf categoryChoiced = "Connectique/Câblage" Then
+ElseIf categoryChoiced = "connectique/câblage" Then
     cmbItemSubcategory.RowSource = "connector_cabling"
-ElseIf categoryChoiced = "Consommable" Then
+ElseIf categoryChoiced = "consommable" Then
     cmbItemSubcategory.RowSource = "consumable"
-ElseIf categoryChoiced = "Imprimante/Scanner" Then
+ElseIf categoryChoiced = "imprimante/scanner" Then
     cmbItemSubcategory.RowSource = "printer_scanner"
-ElseIf categoryChoiced = "Logiciel/Licence" Then
+ElseIf categoryChoiced = "logiciel/licence" Then
     cmbItemSubcategory.RowSource = "software_licence"
-ElseIf categoryChoiced = "Matériel de Bureau" Then
+ElseIf categoryChoiced = "matériel de bureau" Then
     cmbItemSubcategory.RowSource = "office_equipment"
-ElseIf categoryChoiced = "Matériel Mobile" Then
+ElseIf categoryChoiced = "matériel mobile" Then
     cmbItemSubcategory.RowSource = "mobile_hardware"
-ElseIf categoryChoiced = "Matériel Réseau" Then
+ElseIf categoryChoiced = "matériel réseau" Then
     cmbItemSubcategory.RowSource = "network_hardware"
-ElseIf categoryChoiced = "Périphérique" Then
+ElseIf categoryChoiced = "périphérique" Then
     cmbItemSubcategory.RowSource = "peripheral"
-ElseIf categoryChoiced = "Stockage" Then
+ElseIf categoryChoiced = "stockage" Then
     cmbItemSubcategory.RowSource = "storage"
 End If
+End Sub
+
+' ----------------------------------------------------------------------------------------------
+' Objectif : Réinitilise le champ de sous-catégorie
+' ----------------------------------------------------------------------------------------------
+Private Sub cmbItemCategory_Click()
+cmbItemSubcategory.Value = ""
 End Sub
 
 ' ----------------------------------------------------------------------------------------------
@@ -792,6 +807,9 @@ rangeStockLastLine = CLng(rangeStockAddressPart(4))
 ' Vide la liste avant de la remplir
 lstItems.Clear
 
+' Vide la liste des historiques de mouvements du matériel
+lstItemHistorical.Clear
+
 ' Parcours des matériels
 For i = 3 To rangeStockLastLine
     ' Col2 = Qté actuelle / Col5 = Qté minimum ? filtre
@@ -832,6 +850,10 @@ userSearch = CStr(LCase(Trim(txtSearchItem.Value)))
 ' Vide la liste avant de la remplir avec les résultats
 lstItems.Clear
 
+' Vide la liste des historiques de mouvements du matériel
+lstItemHistorical.Clear
+
+' Vide la liste
 ' Boucle sur les matériels
 For i = 3 To rangeStockLastLine
     itemLabelValue = CStr(LCase(Trim(tabStock.Range(i - 1, 1).Value)))
@@ -910,70 +932,96 @@ End Sub
 ' Clic simple sur "Sauvegarder" : enregistre les modifications apportées au matériel sélectionné
 ' ----------------------------------------------------------------------------------------------
 Private Sub btnSaveItemUpdate_Click()
-    Dim activeItemLabel As String
-    Dim rowToUpdate As Variant
-    Dim lastRow As Long
-    Dim saveConfirmation As VbMsgBoxResult
-    Dim i As Long
+Dim activeItemLabel As String
+Dim rowToUpdate As Variant
+Dim lastRow As Long
+Dim saveConfirmation As VbMsgBoxResult
+Dim i As Long
+Dim itemMinQuantity As Variant
 
-    ' Vérifier la sélection de l'élément dans la ListBox
-    If lstItems.ListIndex = -1 Then
-        MsgBox "Veuillez sélectionner un matériel à modifier.", vbExclamation
-        Exit Sub
-    End If
+' Vérifier la sélection de l'élément dans la ListBox
+If lstItems.ListIndex = -1 Then
+    MsgBox "Veuillez sélectionner un matériel à modifier.", vbExclamation
+    Exit Sub
+End If
     
-    ' Conserver la valeur de l'élément sélectionné
-    activeItemLabel = lstItems.Value
+' Conserver la valeur de l'élément sélectionné
+activeItemLabel = lstItems.Value
     
-    '  Re-calculer la plage de recherche
-    lastRow = wsStock.Cells(wsStock.Rows.Count, "A").End(xlUp).Row
-    Dim rangeStock As Range
-    Set rangeStock = wsStock.Range("A3:A" & lastRow)
+'  Re-calculer la plage de recherche
+lastRow = wsStock.Cells(wsStock.Rows.Count, "A").End(xlUp).Row
+Dim rangeStock As Range
+Set rangeStock = wsStock.Range("A3:A" & lastRow)
     
-    ' Chercher la ligne correspondante avec Application.Match
-    On Error Resume Next
-    rowToUpdate = Application.Match(activeItemLabel, rangeStock, 0)
-    On Error GoTo 0
+' Chercher la ligne correspondante avec Application.Match
+On Error Resume Next
+rowToUpdate = Application.Match(activeItemLabel, rangeStock, 0)
+On Error GoTo 0
     
-    ' Gérer l'erreur si matériel n'est pas trouvé
-    If IsError(rowToUpdate) Then
-        MsgBox "Erreur : matériel sélectionné n'a pas été trouvé dans le tableau.", vbCritical
-        Exit Sub
-    End If
+' Gérer l'erreur si matériel n'est pas trouvé
+If IsError(rowToUpdate) Then
+    MsgBox "Erreur : matériel sélectionné n'a pas été trouvé dans le tableau.", vbCritical
+    Exit Sub
+End If
     
-    ' Demander confirmation avant la sauvegarde
-    saveConfirmation = MsgBox("Confirmer la sauvegarde des modifications", vbYesNo)
+' Demander confirmation avant la sauvegarde
+saveConfirmation = MsgBox("Confirmer la sauvegarde des modifications", vbYesNo)
     
-    If saveConfirmation = vbYes Then
-        ' Mettre à jour les données sur la feuille de calcul
-        ' Le +2 est nécessaire car la plage commence à la ligne 3 (rowToUpdate est un index basé sur la plage)
-        wsStock.Cells(rowToUpdate + 2, 1).Value = txtItemLabel.Value
-        wsStock.Cells(rowToUpdate + 2, 3).Value = cmbItemCategory.Value
-        wsStock.Cells(rowToUpdate + 2, 6).Value = cmbItemSubcategory.Value
-        wsStock.Cells(rowToUpdate + 2, 5).Value = txtItemMinQuantity.Value
-        wsStock.Cells(rowToUpdate + 2, 7).Value = txtItemComment.Value
+If saveConfirmation = vbYes Then
+    ' Mettre à jour les données sur la feuille de calcul
+    ' Le +2 est nécessaire car la plage commence à la ligne 3 (rowToUpdate est un index basé sur la plage)
+    wsStock.Cells(rowToUpdate + 2, 1).Value = txtItemLabel.Value
+    wsStock.Cells(rowToUpdate + 2, 3).Value = cmbItemCategory.Value
+    wsStock.Cells(rowToUpdate + 2, 6).Value = cmbItemSubcategory.Value
         
-        MsgBox "Modifications sauvegardées avec succès !", vbInformation
+    ' Récupération de la valeur du seuil
+    itemMinQuantity = txtItemMinQuantity.Value
+        
+    ' Vérification que la valeur est bien numérique sinon elle sera égale à 0
+    If Not IsNumeric(itemMinQuantity) Then
+        itemMinQuantity = 0
     End If
+        
+    ' Vérification que la valeur est bien positive sinon elle sera convertie en nombre positif : -5 deviendra 5
+    If itemMinQuantity < 0 Then
+        itemMinQuantity = itemMinQuantity - (itemMinQuantity * 2)
+    End If
+            
+    wsStock.Cells(rowToUpdate + 2, 5).Value = itemMinQuantity
+    wsStock.Cells(rowToUpdate + 2, 7).Value = CStr(LCase(Trim(txtItemComment.Value)))
+        
+    MsgBox "Modifications sauvegardées avec succès !", vbInformation
+End If
 
-    ' Recharger la ListBox
-    lstItems.Clear
-    For i = 3 To lastRow
-        lstItems.addItem wsStock.Cells(i, 1).Value
-        lstItems.List(lstItems.ListCount - 1, 1) = wsStock.Cells(i, 2).Value
-        lstItems.List(lstItems.ListCount - 1, 2) = wsStock.Cells(i, 3).Value
-        lstItems.List(lstItems.ListCount - 1, 3) = wsStock.Cells(i, 4).Value
-    Next i
+' Recharger la ListBox
+lstItems.Clear
+For i = 3 To lastRow
+    lstItems.addItem wsStock.Cells(i, 1).Value
+    lstItems.List(lstItems.ListCount - 1, 1) = wsStock.Cells(i, 2).Value
+    lstItems.List(lstItems.ListCount - 1, 2) = wsStock.Cells(i, 3).Value
+    lstItems.List(lstItems.ListCount - 1, 3) = wsStock.Cells(i, 4).Value
+Next i
     
-    ' Resélectionner l'élément dans la ListBox
-    For i = 0 To lstItems.ListCount - 1
-        If lstItems.List(i, 0) = activeItemLabel Then
-            lstItems.Selected(i) = True
-            Exit For
-        End If
-    Next i
-    
+' Resélectionner l'élément dans la ListBox
+For i = 0 To lstItems.ListCount - 1
+    If lstItems.List(i, 0) = activeItemLabel Then
+        lstItems.Selected(i) = True
+        Exit For
+    End If
+Next i
+End Sub
+
+' ----------------------------------------------------------------------------------------------
+' Objectif : Sauvegarde le classeur et propose l'affichage du dlasseur avant la fermeture de l'application
+' ----------------------------------------------------------------------------------------------
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
 ' Sauvegarde le classeur
 wb.Save
+' MsgBox qui permet de demander à l'utilisateur s'il veut afficher ou non le classeur Excel après la fermeture de l'application
+choice = MsgBox("Ouvrir le classeur Excel ?" & vbCrLf & "Oui : Fermer l'application et afficher le classeur Excel ?" & vbCrLf & "Non : Fermer l'application", vbYesNo)
+' Si le choix est "oui", l'application se ferme et le classeur devient visible, si le choix est "non", l'application se ferme et le classeur reste invisible
+If choice = vbYes Then
+    Application.Visible = True
+End If
 End Sub
 

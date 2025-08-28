@@ -13,15 +13,14 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Sub UserForm_Initialize()
 ' ==============================================================================================
 ' Procédure : UserForm_Initialize
 ' Objectif  : Initialiser le formulaire "Ajouter un mouvement" en définissant les références
 '             aux données et en configurant l'interface graphique (front-end)
 ' ==============================================================================================
-
+Private Sub UserForm_Initialize()
 ' ----------------------------------------------------------------------------------------------
-' Section : Références et variables
+' Section pour déclaration des variables et initialisation des références
 ' ----------------------------------------------------------------------------------------------
 
 ' Référence au classeur qui contient la macro
@@ -47,6 +46,8 @@ Dim rangeStockAddressPart() As String
 Dim rangeStockLastLine As Long
 Dim rangeMovementAddressPart() As String
 Dim rangeMovementLastLine As Long
+Dim startDate As Date
+Dim endDate As Date
 
 ' ----------------------------------------------------------------------------------------------
 ' Section pour définir le front-end du formulaire (dimensions, titre, couleurs)
@@ -79,6 +80,7 @@ With cmbMovementItem
     .Top = 20
     .Width = 250
     .Height = 20
+    .Style = fmStyleDropDownList
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
@@ -99,17 +101,28 @@ With lblMovementDate
     .ForeColor = COLOR_GRAY_LIGHT
 End With
 
-' Zone de saisie pour la date
-With txtMovementDate
+' Liste déroulante pour la date
+With cmbMovementDate
     .Left = 140
     .Top = 60
     .Width = 250
     .Height = 20
+    .MaxLength = 10
+    .Style = fmStyleDropDownList
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
     .ForeColor = COLOR_GRAY_LIGHT
 End With
+
+' Alimentation de la liste déroulante pour la date à partir d'une période donnée
+startDate = CDate("01/01/2025")
+endDate = CDate("31/12/2025")
+
+While endDate <> startDate
+    cmbMovementDate.addItem (endDate)
+    endDate = endDate - 1
+Wend
 
 ' Label "Type"
 With lblMovementType
@@ -194,6 +207,7 @@ With txtMovementDescription
     .Top = 180
     .Width = 250
     .Height = 20
+    .MaxLength = 30
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_DARK
@@ -229,7 +243,6 @@ With btnCancelAddMovement
 End With
 End Sub
 
-
 ' ----------------------------------------------------------------------------------------------
 ' Bouton "Ajouter" : enregistre un nouveau mouvement et met à jour la liste
 ' ----------------------------------------------------------------------------------------------
@@ -240,7 +253,7 @@ Private Sub btnAddMovement_Click()
  Dim rangeStock As Range
  Dim moveItemLabel As String, moveType As String, moveDescription As String
  Dim moveDate As Date
- Dim moveValue As Integer
+ Dim moveValue As Variant
  Dim activeItemRowTab As Variant
  Dim activeItemCurrentQuantity As Variant
  Dim i As Long
@@ -265,23 +278,32 @@ Set tabMovement = wsMovement.ListObjects("movement")
 If Len(moveItemLabel) = 0 Then Exit Sub
 
 ' Conversion en date
-moveDate = CDate(txtMovementDate.Value)
-
-' Vérification que la valeur est bien numérique
-If Not IsNumeric(txtMovementValue.Value) Then Exit Sub
-moveValue = CLng(txtMovementValue.Value)
+moveDate = CDate(cmbMovementDate.Value)
 
 ' Détermination du type de mouvement
 If rdbEntry.Value Then
-    moveType = "Entrée"
+    moveType = "entrée"
 ElseIf rdbExit.Value Then
-    moveType = "Sortie"
+    moveType = "sortie"
 Else
     Exit Sub
 End If
 
+' Récupération de la valeur du mouvement
+moveValue = txtMovementValue.Value
+
+' Vérification que la valeur est bien numérique sinon elle sera égale à 0
+If Not IsNumeric(moveValue) Then
+    moveValue = 0
+End If
+
+' Vérification que la valeur est bien positive sinon elle sera convertie en nombre positif : -5 deviendra 5
+If moveValue < 0 Then
+    moveValue = moveValue - (moveValue * 2)
+End If
+    
 ' Description libre
-moveDescription = txtMovementDescription.Value
+moveDescription = CStr(LCase(Trim(txtMovementDescription.Value)))
  
 ' Localisation du matériel dans le stock
 Set rangeStock = tabStock.ListColumns(1).DataBodyRange
@@ -292,7 +314,7 @@ If IsError(activeItemRowTab) Then Exit Sub    ' Si introuvable ? sortie
 activeItemCurrentQuantity = tabStock.DataBodyRange.Cells(activeItemRowTab, 2).Value
 
 ' Mise à jour de la quantité en stock
-If moveType = "Entrée" Then
+If moveType = "entrée" Then
     tabStock.DataBodyRange.Cells(activeItemRowTab, 2).Value = CLng(activeItemCurrentQuantity) + moveValue
 Else
     tabStock.DataBodyRange.Cells(activeItemRowTab, 2).Value = CLng(activeItemCurrentQuantity) - moveValue
@@ -340,9 +362,6 @@ End With
     
 ' Fermeture du formulaire
 Unload Me
-    
-' Sauvegarde le classeur
-wb.Save
 End Sub
 
 ' ----------------------------------------------------------------------------------------------

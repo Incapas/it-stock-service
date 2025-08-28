@@ -31,3 +31,4 @@ Public rangeMovement As Range
 
 ' Plage représentant l'adresse du tableau de mouvement
 Public rangeMovementAdress As String
+

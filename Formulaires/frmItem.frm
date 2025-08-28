@@ -13,12 +13,24 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Sub UserForm_Initialize()
 ' ==============================================================================================
 ' Procédure : UserForm_Initialize
 ' Objectif  : Initialiser le formulaire "Ajouter un matériel" en définissant les références
 '             aux données et en configurant l'interface graphique (front-end)
 ' ==============================================================================================
+Private Sub UserForm_Initialize()
+' ----------------------------------------------------------------------------------------------
+' Section pour déclaration des variables et initialisation des références
+' ----------------------------------------------------------------------------------------------
+
+' Référence au classeur qui contient la macro
+Set wb = ThisWorkbook
+
+' Référence à la feuille "stock" contenant la liste des matériels
+Set wsStock = wb.Worksheets("stock")
+
+' Référence au tableau structuré nommé "stock"
+Set tabStock = wsStock.ListObjects("stock")
 
 ' ----------------------------------------------------------------------------------------------
 ' Section pour définir le front-end du formulaire (dimensions, titre, couleurs)
@@ -52,12 +64,12 @@ With txtAddItem
     .Top = 55
     .Width = 200
     .Height = 20
+    .MaxLength = 30
     .Font.Name = FONT_NAME
     .Font.Size = FONT_SIZE_SMALL
     .BackColor = COLOR_GRAY_IRON
     .ForeColor = COLOR_GRAY_LIGHT
     .BorderColor = COLOR_GRAY_LIGHT
-    .MaxLength = 50
 End With
 
 ' Bouton "Ajouter"
@@ -96,22 +108,44 @@ Private Sub btnAddItem_Click()
 Dim itemLabel As String
 Dim rangeStockAddressPart() As String
 Dim rangeStockLastLine As Long
+Dim tabStockLabelColumn As Range
+Dim verification
 
-Set wb = ThisWorkbook
+' Cette varaible stocke les données de la première colonne du tableau de stock à savoir le libellé de chaque matériel
+Set tabStockLabelColumn = tabStock.ListColumns("libellé").DataBodyRange
 
 ' Récupère le texte saisi
 itemLabel = txtAddItem.Value
 
-' Met en minuscule et retire espaces inutiles
-itemLabel = LCase(Trim(itemLabel))
-
-' Appelle la procédure d'ajout dans la base
-addItem (itemLabel)
+' Vérifie si le libellé est vide
+If itemLabel = "" Then
+    MsgBox "Aucun libellé n'a été renseigné"
+Else
+    ' Met en minuscule et retire espaces inutiles
+    itemLabel = CStr(LCase(Trim(itemLabel)))
+    On Error Resume Next
+    ' Pour chaque libellé déjà existant dans la colonne associée du tableai=u
+    For Each Label In tabStockLabelColumn
+        ' verifie si le nouveau libellé saisi est égal à chaque libellé déjà existant
+        verification = Label = itemLabel
+        ' Affiche un message en cas de doublon et vide le champ de saisie
+        If verification = vbTrue Then
+            MsgBox "Attention, un matériel existant est déjà nommé " & "'" & itemLabel & "' !"
+            txtAddItem.Value = ""
+            Exit Sub
+        End If
+    Next Label
+    
+    ' Appelle la procédure d'ajout dans la base
+    addItem (itemLabel)
+End If
 
 ' Vide le champ de saisie
 txtAddItem.Value = ""
 
+' Gère l'erreur d'indexation pour l'intégration du tout premier matériel
 On Error Resume Next
+
 ' Récupère la dernière ligne du tableau "stock"
 rangeStockAddress = rangeStock.Address
 rangeStockAddressPart = Split(rangeStockAddress, "$")
@@ -128,9 +162,6 @@ Next i
 
 ' Ferme le formulaire après ajout
 Unload Me
-
-' Sauvegarde le classeur
-wb.Save
 End Sub
 
 ' ----------------------------------------------------------------------------------------------

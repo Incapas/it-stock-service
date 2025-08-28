@@ -5,7 +5,6 @@ Attribute VB_Name = "modStockModificationSub"
 ' Paramètre : itemLabel ? texte du libellé du matériel à ajouter
 ' ==============================================================================================
 Public Sub addItem(itemLabel As String)
-    ' Références aux objets principaux
      ' Classeur contenant la macro
     Set wb = ThisWorkbook
     ' Feuille de calcul "stock"
@@ -39,8 +38,7 @@ End Sub
 '   moveDescription ? Commentaire ou description
 '   moveItem        ? Libellé du matériel concerné
 ' ==============================================================================================
-Public Sub addMovement(moveDate As Date, moveType As String, moveValue As Integer, moveDescription As String, moveItem As String)
-    'Références aux objets principaux
+Public Sub addMovement(moveDate As Date, moveType As String, moveValue As Variant, moveDescription As String, moveItem As String)
     ' Classeur contenant la macro
     Set wb = ThisWorkbook
     ' Feuille "mouvement"
@@ -69,5 +67,4 @@ Public Sub addMovement(moveDate As Date, moveType As String, moveValue As Intege
     ' Colonne 5 : libellé du matériel concerné
     newMovementRow.Range.Cells(5).Value = moveItem
 End Sub
-
 

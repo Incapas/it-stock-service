@@ -32,7 +32,6 @@ Le système est structuré autour de trois feuilles de calcul principales :
   |------------------|-------|------------------|-------------|-------|------------------|-------------|---------------|---------------|
   | (Texte)          | (Nombre) | (Texte)          | (Date courte) | (Nombre) | (Texte)          | (Texte)     | (Nombre)      | (Nombre)      |
 - Masquez la **ligne 1**.
-
 ---
 
 ### 3. Configuration de la feuille `mouvement`

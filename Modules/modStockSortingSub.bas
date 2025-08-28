@@ -25,7 +25,6 @@ Public Sub SortStockByLabelAscending()
     End With
 End Sub
 
-
 ' ==============================================================================================
 ' Procédure : SortStockByLabelDescending
 ' Objectif  : Trier le stock par libellé (Z ? A)
@@ -42,7 +41,6 @@ Public Sub SortStockByLabelDescending()
         .Apply
     End With
 End Sub
-
 
 ' ==============================================================================================
 ' Procédure : SortStockByCurrentQuantityAscending
@@ -65,7 +63,6 @@ Public Sub SortStockByCurrentQuantityAscending()
     End With
 End Sub
 
-
 ' ==============================================================================================
 ' Procédure : SortStockByCurrentQuantityDescending
 ' Objectif  : Trier par quantité (décroissante), puis libellé (A ? Z)
@@ -86,7 +83,6 @@ Public Sub SortStockByCurrentQuantityDescending()
         .Apply
     End With
 End Sub
-
 
 ' ==============================================================================================
 ' Procédure : SortStockByCategoryAscending
@@ -109,7 +105,6 @@ Public Sub SortStockByCategoryAscending()
     End With
 End Sub
 
-
 ' ==============================================================================================
 ' Procédure : SortStockByCategoryDescending
 ' Objectif  : Trier par catégorie (Z ? A), puis libellé (A ? Z)
@@ -131,7 +126,6 @@ Public Sub SortStockByCategoryDescending()
     End With
 End Sub
 
-
 ' ==============================================================================================
 ' Procédure : SortStockByUpdateDateAscending
 ' Objectif  : Trier par date de mise à jour (ancienne ? récente), puis libellé (A ? Z)
@@ -152,7 +146,6 @@ Public Sub SortStockByUpdateDateAscending()
         .Apply
     End With
 End Sub
-
 
 ' ==============================================================================================
 ' Procédure : SortStockByUpdateDateDescending
